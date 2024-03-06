@@ -155,3 +155,4 @@ bool screenpixels[50][50]; // zeros matrix to store position of snake and border
    // pos_snake[0] = pos_snake[0] + 1;
     
 }
+https://chat.openai.com/share/5f2291bf-cfdc-4ef8-9362-eb733d17ea70
