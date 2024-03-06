@@ -29,8 +29,6 @@ short z = 0;
 
 short length = 0; // length of snake = score so no need for 2 variables 
 
-
-
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
 void endgame() {
@@ -70,19 +68,20 @@ display.display();
   // Draw border around the 50x50 grid
   for (int y = (SCREEN_HEIGHT - 53); y < (SCREEN_HEIGHT - 3); y++) {
     for (int x = (SCREEN_WIDTH - 52) / 2; x < (SCREEN_WIDTH + 52) / 2; x++) {
-      // Draw the border
+      // Draw pixel
       if (x == (SCREEN_WIDTH - 52) / 2 || x == (SCREEN_WIDTH + 51) / 2 || y == (SCREEN_HEIGHT - 53) || y == (SCREEN_HEIGHT - 4)) {
         display.drawPixel(x, y, SSD1306_WHITE);
 
       }
     }
   }
+
   //draw the scoreboard
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor((SCREEN_WIDTH - 8 * 9 + 20) / 2, 0); // Centered horizontally
   display.print("Score: ");
-  display.print(direction);
+  display.print("placeholder");
   display.display();
 }
 
@@ -90,8 +89,15 @@ display.display();
 void loop() {
   // put your main code here, to run repeatedly:
 bool screenpixels[50][50]; // zeros matrix to store position of snake and borders
+for (int i = 0; i < 50; i++)
+{
+  for (int j = 0; j < 50; j++)
+  {
+    screenpixels[i][j] = 0;
+  }
+}
     //moving snake
-    
+    /*
     if (direction == "right") {
       pos_snake[0]++;
     }
@@ -128,10 +134,12 @@ bool screenpixels[50][50]; // zeros matrix to store position of snake and border
       length++;
       gotapple = 0;
     }
+    
 
     screenpixels[pos_snake[0]][pos_snake[1]] = 1;
      // Code to draw the display
     display.clearDisplay();
+    */
     for (int y = 0; y < 50; y++) {
       for (int x = 0; x < 50; x++) {
         if (screenpixels[x][y] == 1) {
@@ -139,6 +147,8 @@ bool screenpixels[50][50]; // zeros matrix to store position of snake and border
         }
       }
     }
+    
+
     // Draw the apple
     display.drawPixel(pos_apple[0], pos_apple[1], SSD1306_WHITE);
 
@@ -150,9 +160,9 @@ bool screenpixels[50][50]; // zeros matrix to store position of snake and border
     display.print(length);
     
     display.display();
-    delay(10000); // Adjust delay as needed
+    delay(1000); // Adjust delay as needed
     Serial.print("Failure");
    // pos_snake[0] = pos_snake[0] + 1;
     
 }
-https://chat.openai.com/share/5f2291bf-cfdc-4ef8-9362-eb733d17ea70
+// https://chat.openai.com/share/5f2291bf-cfdc-4ef8-9362-eb733d17ea70
