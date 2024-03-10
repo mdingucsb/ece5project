@@ -33,9 +33,15 @@ bool gotapple = 0; //if an apple was eaten on this cycle
 short pos_snake[2];
 short pos_apple[2];
 short z = 0;
-short length = 0; // length of snake = score so no need for 2 variables 
+short length = 5; // length of snake = score so no need for 2 variables 
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+struct Segment {
+  short x;
+  short y;
+  short expiration; // Number of cycles remaining for this segment to be drawn
+};
+Segment snake_segments[25]; // Maximum length of the snake
 
 void setup() {
 
@@ -154,26 +160,35 @@ void loop() {
     if (pos_snake[0] == pos_apple[0] && pos_snake[1] == pos_apple[1]) {
       //increment length and score by +1, randomize new apple position
       Serial.print("YUM");
-      length += 1;
+      //length += 1;
       pos_apple[0] = random(1, 9);
       pos_apple[1] = random(1, 9);
-      gotapple = 1;
+      //gotapple = 1;
     }
 
     //scoreboard logic:
-
+    gotapple = 1;
     if (gotapple == 1) {
       length++;
       gotapple = 0;
     }
+
+    
+      for (int i = length - 1; i > 0; i--) {
+        snake_segments[i] = snake_segments[i - 1];
+      }
+      snake_segments[0].x = pos_snake[0];
+      snake_segments[0].y = pos_snake[1];
+      snake_segments[0].expiration = length;
+    
     
     //Serial.print("7");
-    screenpixels[pos_snake[0]][pos_snake[1]] = true;
-    //screenpixels[5][10] = true;
+     for (int i = 0; i < length; i++) {
+    screenpixels[snake_segments[i].x][snake_segments[i].y] = true;
+  }
      // Code to draw the display
     display.clearDisplay();
-    //Serial.print("xyz");
-    //Serial.print("8");
+
 
     for (int x = 0; x < 10; x++) {
       for (int y = 0; y < 10; y++) {
@@ -193,25 +208,25 @@ void loop() {
     display.setTextColor(SSD1306_WHITE);
     display.setCursor((SCREEN_WIDTH - 8 * 9 + 20) / 2, 0); // Centered horizontally
     display.print("Score: ");
-    display.print(direction);
     //Serial.print("10");
     display.display();
     delay(100); // Adjust delay as needed
     //Serial.print("Failure");
     pos_snake[1] = pos_snake[1] + 1;
-    //pos_apple[0] = pos_apple[0] + random(-2, 3);
-   // pos_apple[1] = pos_apple[1] + 1;
+    
+    pos_apple[0] = pos_apple[0] + random(-2, 3);
+    //pos_apple[1] = pos_apple[1] + 1;
     
 }
 
 void endgame() {
-  display.clearDisplay();
+  /*display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, 10);
   // Display static text
   display.println("Game Over!");
   display.display(); 
-  delay(1000);
+  delay(1000);*/
 }
 // https://chat.openai.com/share/5f2291bf-cfdc-4ef8-9362-eb733d17ea70
