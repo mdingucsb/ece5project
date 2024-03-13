@@ -14,12 +14,14 @@
 #define OLED_CS 6
 #define OLED_RESET 7
 
-#define VRX_PIN A0  // Arduino pin connected to VRX pin
+#define VRX_PIN A0
 #define VRY_PIN A1
+#define SIZE 10
 
 int xValue = 0;    // To store value of the X axis
 int yValue = 0;    // To store value of the Y
 String direction;  // stores the direction the joystick is in
+char score[2];
 
 bool gotapple = 0;  //if an apple was eaten on this cycle
 bool goodapple = 0;
@@ -37,6 +39,17 @@ struct Segment {
   short y;
   short expiration;  // Number of cycles remaining for this segment to be drawn
 };
+/*
+int availableMemory() {
+    // Use 1024 with ATmega168
+    int size = 2048;
+    byte *buf;
+    while ((buf = (byte *) malloc(--size)) == NULL);
+        free(buf);
+    return size;
+}
+*/
+
 
 Segment snake_segments[25];  // Maximum length of the snake
 void endgame() {
@@ -54,6 +67,7 @@ void endgame() {
   length = 1;
   delay(3000);
 }
+
 void setup() {
   Serial.begin(9600);
   pinMode(VRX_PIN, INPUT);
@@ -67,23 +81,14 @@ void setup() {
   pos_apple[0] = 5;
   pos_apple[1] = 9;
 
-  
 
   if (!display.begin(SSD1306_SWITCHCAPVCC)) {
     Serial.println(F("SSD1306 allocation failed"));
     for (;;)
       ;  // Don't proceed, loop forever
   }
-
-  //draw border 
-   for (int y = (SCREEN_HEIGHT - 53); y < (SCREEN_HEIGHT - 3); y++) {
-    for (int x = (SCREEN_WIDTH - 52) / 2; x < (SCREEN_WIDTH + 52) / 2; x++) {
-      // Draw pixel
-      if (x == (SCREEN_WIDTH - 52) / 2 || x == (SCREEN_WIDTH + 51) / 2 || y == (SCREEN_HEIGHT - 53) || y == (SCREEN_HEIGHT - 4)) {
-        display.drawPixel(x, y, SSD1306_WHITE);
-      }
-    }
-  }
+  
+  // draw welcome screen
   display.clearDisplay();
   display.display();
   display.setTextSize(1);
@@ -94,37 +99,11 @@ void setup() {
   display.clearDisplay();
   delay(500);
   display.display();
-
-
-  //draw the scoreboard
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor((SCREEN_WIDTH - 8 * 9 + 20) / 2, 0);  // Centered horizontally
-  display.print("Score: ");
- //display.print(length);
-  display.display();
 }
 
-
-
-#define SIZE 10
-//dimensions: 50x50 (for now)
 void loop() {
-  bool screenpixels[SIZE][SIZE];  // zeros matrix to store position of snake and borders
-  short int counter = 0;
+  bool screenpixels[SIZE][SIZE];  // zeros matrix to store position of snake and border
   while(true) {
-  
-  /*Serial.print(availableMemory());
-  Serial.print("\n");
-  //Serial.print(counter);
-  counter++;
-  if(counter == SIZE) {
-    counter = 0;
-  }
-
-
-
-  */
   for (int x = 0; x < 10; x++) {
     for (int y = 0; y < 10; y++) {
       screenpixels[x][y] = 0;
@@ -163,19 +142,25 @@ void loop() {
     pos_snake[1]++;
   }
 
-  Serial.print(direction);
-  Serial.print("\n");
 
   //check for collision w/ walls
   //needs to be updated for new size!!
   if (pos_snake[0] == -1 || pos_snake[0] == 10 || pos_snake[1] == -1 || pos_snake[1] == 10) {
     endgame();
   }
-  //Serial.print("5");
+  
+  // check for self collision
+  for (int i = 1; i < length; i++)
+  {
+    if (pos_snake[0] == snake_segments[i].x && pos_snake[1] == snake_segments[i].y)
+    {
+      endgame();
+    }
+  }
+
   // check for collision w/ apple
   if (pos_snake[0] == pos_apple[0] && pos_snake[1] == pos_apple[1]) {
     //increment length and score by +1, randomize new apple position
-    Serial.print("YUM");
     goodapple = 0;
     pos_apple[0] = random(1, 9);
     pos_apple[1] = random(1, 9);
@@ -239,15 +224,24 @@ void loop() {
     }
   }
 
-  //String score = String(length - 1);
+
+  
+  //score = String(length - 1);
+  itoa(length - 1, score, 10);
   // Draw the scoreboard
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor((SCREEN_WIDTH - 8 * 9 + 20) / 2, 0);  // Centered horizontally
   display.print("Score: ");
-  //display.print(score);
+  display.print(score);
   display.display();
+
   delay(400);  // Adjust delay as needed
 
+  
+  //Serial.print(availableMemory());
+  //Serial.print("\n");
+  
+  
 }
 }
