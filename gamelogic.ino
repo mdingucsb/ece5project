@@ -252,6 +252,3 @@ void loop() {
   //Serial.print("oijiojfeo");
 }
 }
-
-
-
