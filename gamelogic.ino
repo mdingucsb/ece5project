@@ -60,6 +60,7 @@ void endgame() {
 
 void setup() {
   Serial.begin(9600);
+  randomSeed(analogRead(A2));
   pinMode(VRX_PIN, INPUT);
   pinMode(VRY_PIN, INPUT);
   display.begin();
@@ -182,7 +183,6 @@ void loop() {
     gotapple = 0;
   }
 
-
   for (int i = length - 1; i > 0; i--) {
     snake_segments[i] = snake_segments[i - 1];
   }
@@ -197,15 +197,17 @@ void loop() {
   }
   screenpixels[pos_apple[0]][pos_apple[1]] = 1;
 
+
   // Code to draw the display
   display.clearDisplay();
+
   
-  // Draw border around the 50x50 grid
+    // Draw border around the 50x50 grid
   
   for (int y = 10; y < 52; y++) {
-    for (int x = 37; x < 79; x++) {
+    for (int x = 41; x < 83; x++) {
       // Draw pixel
-      if (x == 37 || x == 78|| y == 10 || y == 51) {
+      if (x == 41 || x == 82| y == 10 || y == 51) {
         display.drawPixel(x, y, SSD1306_WHITE);
       }
     }
@@ -215,7 +217,7 @@ void loop() {
   for (int x = 0; x < SIZE*4; x++) {
     for (int y = 0; y < SIZE*4; y++) {
       if (screenpixels[x/4][y/4] == true) {
-        display.drawPixel(x+38, y+11, SSD1306_WHITE);
+        display.drawPixel(x+42, y+11, SSD1306_WHITE);
       }
     }
   }
@@ -230,6 +232,6 @@ void loop() {
   display.display();
 
   delay(400);  // Adjust delay as needed
-  
+
 }
 }
