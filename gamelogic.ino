@@ -28,7 +28,7 @@ bool goodapple = 0;
 short pos_snake[2];
 short pos_apple[2];
 short z = 0;
-short length = 2;  // length of snake = score so no need for 2 variables
+short length = 1;  // length of snake = score so no need for 2 variables
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
@@ -220,9 +220,9 @@ void loop() {
   
     // Draw border around the 50x50 grid
   for (int y = 10; y < 52; y++) {
-    for (int x = 37; x < 79; x++) {
+    for (int x = 36; x < 79; x++) {
       // Draw pixel
-      if (x == 37 || x == 78 || y == 10 || y == 51) {
+      if (x == 36 || x == 77 || y == 10 || y == 51) {
         display.drawPixel(x, y, SSD1306_WHITE);
       }
     }
