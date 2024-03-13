@@ -18,13 +18,13 @@
 #define VRY_PIN A1
 #define SIZE 10
 
-int xValue = 0;    // To store value of the X axis
-int yValue = 0;    // To store value of the Y
+int xValue = 0;    
+int yValue = 0;    
 String direction;  // stores the direction the joystick is in
-char score[2];
+char score[2]; // to display score
 
 bool gotapple = 0;  //if an apple was eaten on this cycle
-bool goodapple = 0;
+bool goodapple = 0; //if apple spawn is allowed
 
 //pos 0 is x, pos 1 is y
 short pos_snake[2];
@@ -39,19 +39,9 @@ struct Segment {
   short y;
   short expiration;  // Number of cycles remaining for this segment to be drawn
 };
-/*
-int availableMemory() {
-    // Use 1024 with ATmega168
-    int size = 2048;
-    byte *buf;
-    while ((buf = (byte *) malloc(--size)) == NULL);
-        free(buf);
-    return size;
-}
-*/
-
 
 Segment snake_segments[25];  // Maximum length of the snake
+
 void endgame() {
   display.clearDisplay();
   display.setTextSize(1);
@@ -142,9 +132,7 @@ void loop() {
     pos_snake[1]++;
   }
 
-
   //check for collision w/ walls
-  //needs to be updated for new size!!
   if (pos_snake[0] == -1 || pos_snake[0] == 10 || pos_snake[1] == -1 || pos_snake[1] == 10) {
     endgame();
   }
@@ -169,6 +157,17 @@ void loop() {
         pos_apple[0] = random(1, 9);
         pos_apple[1] = random(1, 9);
         goodapple = 0;
+      }
+      else if (goodapple = 0){
+        for (int i = 1; i < length; i++)
+        {
+          if (pos_snake[0] == snake_segments[i].x && pos_snake[1] == snake_segments[i].y)
+          {
+            pos_apple[0] = random(1,9);
+            pos_apple[1] = random(1,9);
+            goodapple = 0;
+          }
+        }
       }
       else {
         goodapple = 1;
@@ -198,12 +197,10 @@ void loop() {
   }
   screenpixels[pos_apple[0]][pos_apple[1]] = 1;
 
-
   // Code to draw the display
   display.clearDisplay();
-
   
-    // Draw border around the 50x50 grid
+  // Draw border around the 50x50 grid
   
   for (int y = 10; y < 52; y++) {
     for (int x = 37; x < 79; x++) {
@@ -219,14 +216,10 @@ void loop() {
     for (int y = 0; y < SIZE*4; y++) {
       if (screenpixels[x/4][y/4] == true) {
         display.drawPixel(x+38, y+11, SSD1306_WHITE);
-        //delayMicroseconds(100);
       }
     }
   }
 
-
-  
-  //score = String(length - 1);
   itoa(length - 1, score, 10);
   // Draw the scoreboard
   display.setTextSize(1);
@@ -237,11 +230,6 @@ void loop() {
   display.display();
 
   delay(400);  // Adjust delay as needed
-
-  
-  //Serial.print(availableMemory());
-  //Serial.print("\n");
-  
   
 }
 }
