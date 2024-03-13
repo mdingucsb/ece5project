@@ -22,6 +22,7 @@ int yValue = 0;    // To store value of the Y
 String direction;  // stores the direction the joystick is in
 
 bool gotapple = 0;  //if an apple was eaten on this cycle
+bool goodapple = 0;
 
 //pos 0 is x, pos 1 is y
 short pos_snake[2];
@@ -38,19 +39,35 @@ struct Segment {
 };
 
 Segment snake_segments[25];  // Maximum length of the snake
-
+void endgame() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 10);
+  // Display static text
+  display.println("Game Over!");
+  display.display(); 
+  delay(1000);
+  display.clearDisplay();
+  pos_snake[0] = 5;
+  pos_snake[0] = 5;
+  length = 1;
+  delay(3000);
+}
 void setup() {
-
   Serial.begin(9600);
   pinMode(VRX_PIN, INPUT);
   pinMode(VRY_PIN, INPUT);
   display.begin();
+  Serial.print("setup");
 
   // initial positions
-  pos_snake[0] = 5;
-  pos_snake[1] = 5;
+  pos_snake[0] = 6;
+  pos_snake[1] = 6;
   pos_apple[0] = 5;
   pos_apple[1] = 9;
+
+  
 
   if (!display.begin(SSD1306_SWITCHCAPVCC)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -58,6 +75,15 @@ void setup() {
       ;  // Don't proceed, loop forever
   }
 
+  //draw border 
+   for (int y = (SCREEN_HEIGHT - 53); y < (SCREEN_HEIGHT - 3); y++) {
+    for (int x = (SCREEN_WIDTH - 52) / 2; x < (SCREEN_WIDTH + 52) / 2; x++) {
+      // Draw pixel
+      if (x == (SCREEN_WIDTH - 52) / 2 || x == (SCREEN_WIDTH + 51) / 2 || y == (SCREEN_HEIGHT - 53) || y == (SCREEN_HEIGHT - 4)) {
+        display.drawPixel(x, y, SSD1306_WHITE);
+      }
+    }
+  }
   display.clearDisplay();
   display.display();
   display.setTextSize(1);
@@ -68,21 +94,37 @@ void setup() {
   display.clearDisplay();
   delay(500);
   display.display();
-  Serial.print("hello world");
 
- 
 
   //draw the scoreboard
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor((SCREEN_WIDTH - 8 * 9 + 20) / 2, 0);  // Centered horizontally
   display.print("Score: ");
+ //display.print(length);
   display.display();
 }
 
+
+
+#define SIZE 10
 //dimensions: 50x50 (for now)
 void loop() {
-  bool screenpixels[10][10];  // zeros matrix to store position of snake and borders
+  bool screenpixels[SIZE][SIZE];  // zeros matrix to store position of snake and borders
+  short int counter = 0;
+  while(true) {
+  
+  /*Serial.print(availableMemory());
+  Serial.print("\n");
+  //Serial.print(counter);
+  counter++;
+  if(counter == SIZE) {
+    counter = 0;
+  }
+
+
+
+  */
   for (int x = 0; x < 10; x++) {
     for (int y = 0; y < 10; y++) {
       screenpixels[x][y] = 0;
@@ -126,7 +168,7 @@ void loop() {
 
   //check for collision w/ walls
   //needs to be updated for new size!!
-  if (pos_snake[0] == 0 || pos_snake[0] == 50 || pos_snake[1] == 0 || pos_snake[1] == 50) {
+  if (pos_snake[0] == 0 || pos_snake[0] == 10 || pos_snake[1] == 0 || pos_snake[1] == 10) {
     endgame();
   }
   //Serial.print("5");
@@ -134,9 +176,20 @@ void loop() {
   if (pos_snake[0] == pos_apple[0] && pos_snake[1] == pos_apple[1]) {
     //increment length and score by +1, randomize new apple position
     Serial.print("YUM");
-    pos_apple[0] = random(1, 49);
-    pos_apple[1] = random(1, 49);
-    gotapple = 1;
+    goodapple = 0;
+    pos_apple[0] = random(1, 9);
+    pos_apple[1] = random(1, 9);
+    while(goodapple == 0) {
+      if(pos_apple[0] == pos_snake[0] && pos_apple[1] == pos_snake[1]) {
+        pos_apple[0] = random(1, 9);
+        pos_apple[1] = random(1, 9);
+        goodapple = 0;
+      }
+      else {
+        goodapple = 1;
+      }
+      gotapple = 1;
+    }
   }
 
   //scoreboard logic:
@@ -154,36 +207,37 @@ void loop() {
   snake_segments[0].expiration = length;
 
 
-  //Serial.print("7");
+//sets the pixels where the snake is
   for (int i = 0; i < length; i++) {
     screenpixels[snake_segments[i].x][snake_segments[i].y] = true;
   }
+  screenpixels[pos_apple[0]][pos_apple[1]] = 1;
+
+
   // Code to draw the display
   display.clearDisplay();
+
+  
     // Draw border around the 50x50 grid
-    /*
-  for (int y = (SCREEN_HEIGHT - 53); y < (SCREEN_HEIGHT - 3); y++) {
-    for (int x = (SCREEN_WIDTH - 52) / 2; x < (SCREEN_WIDTH + 52) / 2; x++) {
+  for (int y = 10; y < 52; y++) {
+    for (int x = 37; x < 79; x++) {
       // Draw pixel
-      if (x == (SCREEN_WIDTH - 52) / 2 || x == (SCREEN_WIDTH + 51) / 2 || y == (SCREEN_HEIGHT - 53) || y == (SCREEN_HEIGHT - 4)) {
+      if (x == 37 || x == 78 || y == 10 || y == 51) {
         display.drawPixel(x, y, SSD1306_WHITE);
       }
     }
-  }*/
-
+  }
 // sets pixels that need to be drawn on the screen, specifically the snake
-  for (int x = 0; x < 10; x++) {
-    for (int y = 0; y < 10; y++) {
-      if (screenpixels[x][y] == true) {
-        display.drawPixel(x, y, SSD1306_WHITE);
+  for (int x = 0; x < SIZE*4; x++) {
+    for (int y = 0; y < SIZE*4; y++) {
+      if (screenpixels[x/4][y/4] == true) {
+        display.drawPixel(x+38, y+11, SSD1306_WHITE);
         //delayMicroseconds(100);
       }
     }
   }
 
   //Serial.print("9");
-  // Draw the apple
-  display.drawPixel(pos_apple[0], pos_apple[1], SSD1306_WHITE);
 
   // Draw the scoreboard
   display.setTextSize(1);
@@ -192,19 +246,12 @@ void loop() {
   display.print("Score: ");
   //display.print(length);
   display.display();
-  delay(500);  // Adjust delay as needed
+  delay(400);  // Adjust delay as needed
 
 
-  Serial.print("oijiojfeo");
+  //Serial.print("oijiojfeo");
+}
 }
 
-void endgame() {
-  /* display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 10);
-  // Display static text
-  display.println("Game Over!");
-  display.display(); 
-  delay(1000);*/
-}
+
+
