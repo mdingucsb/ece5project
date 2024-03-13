@@ -136,13 +136,13 @@ void loop() {
   yValue = analogRead(VRY_PIN);
   yValue = -1 * (yValue - 511) + 512;
   // down is up, left is left, up is down, right is left
-  if (xValue < 406 && 213 < yValue < 813) {
+  if (xValue < 406 && 213 < yValue < 813 && direction != "right") {
     direction = "left";
-  } else if (xValue > 606 && 213 < yValue < 813) {
+  } else if (xValue > 606 && 213 < yValue < 813 && direction != "left") {
     direction = "right";
-  } else if (yValue < 413 && 206 < xValue < 806) {
+  } else if (yValue < 413 && 206 < xValue < 806 && direction != "up") {
     direction = "down";
-  } else if (yValue > 613 && 206 < xValue < 806) {
+  } else if (yValue > 613 && 206 < xValue < 806 && direction != "down") {
     direction = "up";
   }
 
@@ -168,7 +168,7 @@ void loop() {
 
   //check for collision w/ walls
   //needs to be updated for new size!!
-  if (pos_snake[0] == 0 || pos_snake[0] == 10 || pos_snake[1] == 0 || pos_snake[1] == 10) {
+  if (pos_snake[0] == -1 || pos_snake[0] == 10 || pos_snake[1] == -1 || pos_snake[1] == 10) {
     endgame();
   }
   //Serial.print("5");
@@ -219,14 +219,16 @@ void loop() {
 
   
     // Draw border around the 50x50 grid
+  
   for (int y = 10; y < 52; y++) {
-    for (int x = 36; x < 79; x++) {
+    for (int x = 37; x < 79; x++) {
       // Draw pixel
-      if (x == 36 || x == 77 || y == 10 || y == 51) {
+      if (x == 37 || x == 78|| y == 10 || y == 51) {
         display.drawPixel(x, y, SSD1306_WHITE);
       }
     }
   }
+  
 // sets pixels that need to be drawn on the screen, specifically the snake
   for (int x = 0; x < SIZE*4; x++) {
     for (int y = 0; y < SIZE*4; y++) {
@@ -237,18 +239,15 @@ void loop() {
     }
   }
 
-  //Serial.print("9");
-
+  //String score = String(length - 1);
   // Draw the scoreboard
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor((SCREEN_WIDTH - 8 * 9 + 20) / 2, 0);  // Centered horizontally
   display.print("Score: ");
-  //display.print(length);
+  //display.print(score);
   display.display();
   delay(400);  // Adjust delay as needed
 
-
-  //Serial.print("oijiojfeo");
 }
 }
