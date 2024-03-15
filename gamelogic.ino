@@ -67,10 +67,10 @@ void setup() {
   Serial.print("setup");
 
   // initial positions
-  pos_snake[0] = 6;
-  pos_snake[1] = 6;
-  pos_apple[0] = 5;
-  pos_apple[1] = 9;
+  pos_snake[0] = random(2,8);
+  pos_snake[1] = random(2,8);
+  pos_apple[0] = random(2,8);
+  pos_apple[1] = random(2,8);
 
 
   if (!display.begin(SSD1306_SWITCHCAPVCC)) {
@@ -151,12 +151,12 @@ void loop() {
   if (pos_snake[0] == pos_apple[0] && pos_snake[1] == pos_apple[1]) {
     //increment length and score by +1, randomize new apple position
     goodapple = 0;
-    pos_apple[0] = random(1, 9);
-    pos_apple[1] = random(1, 9);
+    pos_apple[0] = random(2, 8);
+    pos_apple[1] = random(2, 8);
     while(goodapple == 0) {
       if(pos_apple[0] == pos_snake[0] && pos_apple[1] == pos_snake[1]) {
-        pos_apple[0] = random(1, 9);
-        pos_apple[1] = random(1, 9);
+        pos_apple[0] = random(2, 8);
+        pos_apple[1] = random(2, 8);
         goodapple = 0;
       }
       else if (goodapple = 0){
@@ -164,8 +164,8 @@ void loop() {
         {
           if (pos_snake[0] == snake_segments[i].x && pos_snake[1] == snake_segments[i].y)
           {
-            pos_apple[0] = random(1,9);
-            pos_apple[1] = random(1,9);
+            pos_apple[0] = random(2,8);
+            pos_apple[1] = random(2,8);
             goodapple = 0;
           }
         }
